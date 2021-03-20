@@ -19,6 +19,7 @@ jobs:
           cmake --build .
       - name: Test
         run: |
+          cd build
           ctest
 
 
