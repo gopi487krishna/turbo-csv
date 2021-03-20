@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 3.0.0)
 project(turbo-csv VERSION 0.1.0)
 
 include(CTest)
-INCLUDE_DIRECTORIES(
+
+# Specify Boost include path if vcpkg not avaiable
+include_directories(
     /vcpkg/installed/x64-linux/include
 )
-LINK_DIRECTORIES(
+
+# For Boost libraries path if vcpkg not available
+link_directories(
     /vcpkg/installed/x64-linux/lib
 )
 
