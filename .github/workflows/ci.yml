@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup
-        run:  apt-get install -y libboost-all-dev cmake build-essential
+        run:  sudo apt-get install -y libboost-all-dev cmake build-essential
       - name: Build
         run: |
           mkdir build
