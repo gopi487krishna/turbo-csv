@@ -8,5 +8,9 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES(
     /vcpkg/installed/x64-linux/lib
 )
+
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+
 enable_testing()
 
+add_subdirectory(test)
