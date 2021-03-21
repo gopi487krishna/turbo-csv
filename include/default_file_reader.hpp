@@ -1,0 +1,4 @@
+#ifndef DEFAULT_FILE_READER
+#define DEFAULT_FILE_READER
+
+#endif

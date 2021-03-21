@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(turbo-csv VERSION 0.1.0)
+project(turbo-csv VERSION 0.1.0 LANGUAGES CXX)
 
 include(CTest)
+
+
+#Set C++20 standard
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
@@ -9,7 +15,7 @@ find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 find_path(BOOST_INCLUDE_DIR boost/test/unit_test.hpp)
 
 # Adds the base path to the include_directories ( All boost headers can be used now)
-include_directories(${BOOST_INCLUDE_DIR})
+include_directories(${BOOST_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 enable_testing()
 
