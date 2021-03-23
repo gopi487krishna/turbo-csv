@@ -45,7 +45,6 @@ public:
      * @throw std::fstream::faliure If an irrecoverable stream error occured or I/O operation failed
      */
     file_reader(const std::string &path_to_file) noexcept(false):file_path(path_to_file),buf_ptr(ibuf1) {
-        
         file.exceptions(std::fstream::failbit|std::fstream::badbit);
         file.open(path_to_file);
        

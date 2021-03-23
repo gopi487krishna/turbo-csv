@@ -7,8 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      BOOST_TEST_LOG_LEVEL: all
     steps:
       - uses: actions/checkout@v2
       - name: Setup
