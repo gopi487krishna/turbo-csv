@@ -99,25 +99,38 @@ public:
         }
 
         if(current_active=='A' && *buf_ptr=='$'){
-            ibuf1_consumed=true;
-            ibuf1_resx.unlock();
-            while(ibuf2_consumed);
-            current_active='B';
-            buf_ptr=ibuf2;
-            ibuf2_resx.lock();
-              return *buf_ptr++;
+            switch_buffer('B');
+            return *buf_ptr++;
         } else{
-            ibuf2_consumed=true;
-            ibuf2_resx.unlock();
-            while(ibuf1_consumed);
-            current_active='A';
-            buf_ptr=ibuf1;
-            ibuf1_resx.lock();
+            switch_buffer('A');
             return *buf_ptr++;
         }
 
     }
 
+    void switch_buffer(char new_active){
+        
+        switch(new_active){
+
+            case 'A':
+            ibuf2_consumed=true;
+            ibuf2_resx.unlock();
+            while(ibuf1_consumed);
+            buf_ptr=ibuf1;
+            ibuf1_resx.lock();
+            break;
+
+            case 'B':
+            ibuf1_consumed=true;
+            ibuf1_resx.unlock();
+            while(ibuf2_consumed); 
+            buf_ptr=ibuf2;
+            ibuf2_resx.lock();
+            break;
+
+        }
+        current_active=new_active;
+    }
     void populate_buffer(){
         while(true){
             if(stop_producer.load()){
