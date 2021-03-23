@@ -57,7 +57,7 @@ public:
 
     ~file_reader(){
         //Stop the thread if it was still processing
-        stop_thread_1=true;
+        stop_thread_1.store(true);
     }
     /**
      * @brief Checks if the file is open for reading or not
@@ -128,7 +128,7 @@ public:
 
     void populate_buffer(){
         while(true){
-            if(stop_thread_1){
+            if(stop_thread_1.load()){
                 ibuf1_resx.unlock();
                 ibuf2_resx.unlock();
                 return;
