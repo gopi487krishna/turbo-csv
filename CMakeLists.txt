@@ -12,6 +12,9 @@ find_package(Threads REQUIRED)
 
 
 add_definitions(-DEXAMPLES="${CMAKE_CURRENT_SOURCE_DIR}/test/test_files/")
+message(----------------------------------------------------------------------)
+message(${CMAKE_CURRENT_SORUCE_DIR}/test/test_files)
+message(----------------------------------------------------------------------)
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
