@@ -83,7 +83,6 @@ public:
      * @return std::optional<std::uint8_t> Current byte pointed inside the file/nullopt if reading completed
      */
     std::optional<std::uint8_t> get_byte(){
-        std::cerr<<"---GK---:"<<"GET_BYTE_ENTERED";
         if(*buf_ptr!='$' && *buf_ptr!='#'){
             return *buf_ptr++;
         }
@@ -126,11 +125,8 @@ public:
     }
 
     void populate_buffer(){
-        std::cerr<<"---GK---:"<<"POPULATE_BUFFER_ENTERED";
         while(true){
             if(stop_thread_1.load()){
-                ibuf1_resx.unlock();
-                ibuf2_resx.unlock();
                 return;
             }
             if(ibuf1_consumed){
@@ -227,7 +223,7 @@ BOOST_AUTO_TEST_CASE(file_size){
 
 
 BOOST_AUTO_TEST_CASE(get_method_small_file){
-    std::cerr<<"---GK---:"<<"GET_METHOD_ENTERED";
+   
     file_reader<> my_reader(examples_dir()+"cars.csv");
     std::string cars_data="2014,Ford,Fiesta Classic,1.6\n2020,Maruti Suzuki,Brezza,1.6";
     std::string data;
