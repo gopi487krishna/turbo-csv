@@ -2,6 +2,7 @@
 
 #include <default_file_reader.hpp>
 #include <boost/test/unit_test.hpp>
+#include <sstream>
 
 
 auto examples_dir(){
@@ -67,6 +68,25 @@ BOOST_AUTO_TEST_CASE(get_method_small_file_large_buffer){
 
     BOOST_REQUIRE_EQUAL(cars_data,data);
 }
+
+BOOST_AUTO_TEST_CASE(get_method_large_file){
+    file_reader<1000000> my_reader(examples_dir()+"business_price_index.csv");
+    std::fstream file(examples_dir()+"business_price_index.csv");
+    std::stringstream original_data;
+    std::string data;
+
+    
+    original_data<<file.rdbuf();
+
+    while(true){
+        auto byte= my_reader.get_byte();
+        if(byte.has_value()){data.push_back(byte.value());}
+        else{break;}
+    }
+    
+    BOOST_REQUIRE_EQUAL(original_data.str(),data);
+}
+
 
 BOOST_AUTO_TEST_CASE(get_method_read_only_few_bytes){
     file_reader<5> my_reader(examples_dir()+"cars.csv");

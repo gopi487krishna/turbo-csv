@@ -34,7 +34,6 @@ class file_reader{
     char current_active='A';
     char* buf_ptr;
     std::atomic_bool stop_producer = false;
-
 public:
     /**
      * @brief Construct a new file reader object

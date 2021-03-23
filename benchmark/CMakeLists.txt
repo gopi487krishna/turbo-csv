@@ -1,0 +1,2 @@
+add_executable(read_benchmark EXCLUDE_FROM_ALL reader_benchmark.cpp)
+target_link_libraries(read_benchmark PRIVATE benchmark::benchmark benchmark::benchmark_main)
