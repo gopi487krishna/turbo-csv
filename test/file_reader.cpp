@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE file_reader_test
 
-#include <default_file_reader.hpp>
+#include <csv_file_reader.hpp>
 #include <boost/test/unit_test.hpp>
 #include <sstream>
 
