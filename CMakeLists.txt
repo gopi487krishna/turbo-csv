@@ -5,14 +5,7 @@ include(CTest)
 
 
 #Set C++20 standard
-
-if("9.3.0" STREQUAL ${CMAKE_CXX_COMPILER_VERSION})
-set(set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a"))
-else()
 set(CMAKE_CXX_STANDARD 20)
-endif()
-
-
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
