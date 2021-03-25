@@ -10,7 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup
-        run:  sudo apt-get install -y libboost-all-dev cmake build-essential
+        run:  |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt install gcc-10
+          sudo apt install g++-10
+          sudo apt-get install -y libboost-all-dev cmake
       - name: Build
         run: |
           mkdir build
