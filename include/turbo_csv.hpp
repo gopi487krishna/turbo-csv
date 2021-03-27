@@ -3,26 +3,28 @@
 
 #include<deque>
 #include<future>
-#include<csv_file_reader.hpp>
 #include<record.hpp>
 #include<boost/range/iterator_range.hpp>
 #include<unordered_map>
 
 namespace turbo_csv {
-
-    class reader {
-        file_reader<1024> f_reader;
-        std::deque<record<>> records;
+    template<class FileReader,class Dialect>
+    class basic_reader {
+        FileReader f_reader;
+        std::deque<basic_record<Dialect>> records;
         bool treat_first_record_as_header;
         std::unordered_map<std::string,std::size_t> header_record;
-
-    private:
-
-        inline static record<> empty_record{};
+        inline static basic_record<Dialect> empty_record{};
 
     public:
 
-        reader(const std::string& fp, bool treat_first_record_as_header=false) :
+        /**
+         * @brief Construct a new basic reader object
+         * 
+         * @param fp path to the csv file
+         * @param treat_first_record_as_header exclude first record from processing? 
+         */
+        basic_reader(const std::string& fp, bool treat_first_record_as_header=false) :
         f_reader(fp),
         treat_first_record_as_header(treat_first_record_as_header) {
             if(treat_first_record_as_header){
@@ -31,7 +33,12 @@ namespace turbo_csv {
             }
         }
 
-        const record<>& next() {
+        /**
+         * @brief Returns the next record from file
+         * 
+         * @return const basic_record<Dialect>&  lazy record containing the data
+         */
+        const basic_record<Dialect>& next() {
             if (read_next_record()) {
                 return records.back();
             }
@@ -40,25 +47,45 @@ namespace turbo_csv {
             }
         }
 
+        /**
+         * @brief Iterator support for range-based for loops
+         * 
+         */
         class iterator {
             std::int64_t index = 0;
             bool reached_end;
-            reader& parent_reader;
+            basic_reader& parent_reader;
         public:
-            iterator(std::int64_t index, reader& parent_reader, bool reached_end = false) :
+            /**
+             * @brief Construct a new iterator object
+             * 
+             * @param index index of record
+             * @param parent_reader reader to which this iterator belongs.
+             * @param reached_end Used for generating end iterator
+             */
+            iterator(std::int64_t index, basic_reader& parent_reader, bool reached_end = false) :
                 index(index),
                 parent_reader(parent_reader),
                 reached_end(reached_end) {
 
             }
 
-            record<>& operator *() {
+            /**
+             * @brief Dereferences the iterator and gets the underlying record
+             * 
+             * @return basic_record<Dialect>& Record at the given iterator
+             */
+            basic_record<Dialect>& operator *() {
                 if (parent_reader.records.empty()) {
                     parent_reader.read_next_record();
                 }
                 return parent_reader.records.at(index);
             }
 
+            /**
+             * @brief Points iterator to the next record
+             * 
+             */
             void operator++() {
                 ++index;
                 if (index >= parent_reader.records.size()) {
@@ -66,6 +93,13 @@ namespace turbo_csv {
                 }
             }
 
+            /**
+             * @brief Checks whether lhs !=rhs  iterator
+             * 
+             * @param rhs Iterator to compare to
+             * @return true lhs!=rhs
+             * @return false lhs=rhs
+             */
             bool operator !=(const iterator& rhs) {
 
                 if (std::addressof(parent_reader) == std::addressof(rhs.parent_reader)) {
@@ -79,14 +113,32 @@ namespace turbo_csv {
 
         };
 
+        /**
+         * @brief Returns an iterator pointing to the beginning of records
+         * 
+         * @return iterator
+         */
         auto begin() {
             return iterator{ 0,*this };
         }
+
+        /**
+         * @brief Returns an iterator depicting the end of records
+         * 
+         * @return iterator 
+         */
         auto end() {
             return iterator{ -1,*this,true };
         }
 
-        record<>& operator[](std::size_t index){
+        /**
+         * @brief Returns the record at location 'index' in file
+         * 
+         * @param index location of the record in file
+         * @return basic_record<Dialect>& 
+         * @throw std::out_of_range if index> number of records available in file
+         */
+        basic_record<Dialect>& operator[](std::size_t index){
             //Get all the records till the index if not present
             while(index>=records.size()&&read_next_record());
 
@@ -94,9 +146,22 @@ namespace turbo_csv {
             
         }
 
+        /**
+         * @brief Get the active records in the reader object
+         * 
+         * @return std::size_t Count indicating the number of active records
+         */
         std::size_t get_active_recordcount(){
             return records.size();
         }
+
+        /**
+         * @brief gets the column values of specified column index
+         * 
+         * @tparam T Type to deseralize and return the values in
+         * @param column_index column whose data needs to be obtained
+         * @return std::vector<T> vector containing all the values in given column
+         */
 
         template<typename T>
         std::vector<T> get_column(std::size_t column_index){
@@ -111,7 +176,7 @@ namespace turbo_csv {
             std::vector<T>column_items;
 
             for(auto& rec: boost::make_iterator_range(records.begin()+offset,records.end())){
-                deserialized_fields.push_back(std::async([&rec,column_index](){return rec.get_field<T>(column_index);}));
+                deserialized_fields.push_back(std::async([&rec,column_index](){return rec. template get_field<T>(column_index);}));
             }
 
             column_items.reserve(records.size());
@@ -123,6 +188,13 @@ namespace turbo_csv {
             return column_items;
 
         }
+
+        /**
+         * @brief Returns the index of the associated column
+         * 
+         * @param column_name name of the column whose index needs to be found
+         * @return std::size_t index of the associated column
+         */
 
         std::size_t get_indexof(const std::string& column_name){
             return header_record.at(column_name);
@@ -151,21 +223,26 @@ namespace turbo_csv {
                 if (!byte.has_value() && raw_rec.empty()) { return false; }
 
                 if (!byte.has_value()) {
-                    records.push_back(record<>(raw_rec, dbl_quote_pos));
+                    records.push_back(basic_record<Dialect>(raw_rec, dbl_quote_pos));
                     return true;
                 }
 
-                if (byte.value() == '\"') {
+                if (Dialect::is_escapecharacter(byte.value())) {
                     raw_rec.push_back(byte.value());
                     dbl_quote_pos.push_back(f_reader.get_current_readcount() - 1); // 0 based
                 }
 
-                else if (byte.value() == '\n') {
+                else if (Dialect::is_recordseperator(byte.value())) {
                     if (dbl_quote_pos.size() % 2 == 0) {
-                        records.push_back(record<>(raw_rec, dbl_quote_pos));
+                        records.push_back(basic_record<Dialect>(raw_rec, dbl_quote_pos));
                         return true;
                     }
                     else {
+                        raw_rec.push_back(byte.value());
+                    }
+                }
+                else if(dialect::is_ignorecharacter(byte.value())){
+                    if(dbl_quote_pos.size()%2!=0){
                         raw_rec.push_back(byte.value());
                     }
                 }

@@ -5,12 +5,13 @@
 #include<vector>
 #include<string_view>
 #include<boost/lexical_cast.hpp>
+#include<dialect.hpp>
 #include<boost/range/adaptor/reversed.hpp>
 
 namespace turbo_csv{
-    template<char seperator=','>
-    class record{
-        std::vector<int>quote_pos;
+    template<typename Dialect>
+    class basic_record{
+        std::vector<int>escape_char_pos;
         std::string raw_record;
         std::vector<std::string_view> fields;
         bool is_cached=false;
@@ -21,16 +22,16 @@ namespace turbo_csv{
          * @brief Construct a new record object
          * 
          */
-        record():record(""){
+        basic_record():basic_record(""){
 
         }
         /**
          * @brief Construct a new record object
          * 
          * @param raw_rec Raw record data
-         * @param quotes_position vector of all the quotes position in the record
+         * @param escape_char_pos vector of all the escape character position in the record
          */
-        record(const std::string& raw_rec,std::vector<int> quotes_position):raw_record(raw_rec),quote_pos(std::move(quotes_position))
+        basic_record(const std::string& raw_rec,std::vector<int> escape_char_pos):raw_record(raw_rec),escape_char_pos(std::move(escape_char_pos))
         {}
 
         /**
@@ -39,7 +40,7 @@ namespace turbo_csv{
          * @param raw_rec Raw record data
          * @note This constructor is to be used when there are no quotes in the record
          */
-        record(const std::string& raw_rec):record(raw_rec,{}){}
+        basic_record(const std::string& raw_rec):basic_record(raw_rec,{}){}
 
 
         /**
@@ -105,16 +106,16 @@ namespace turbo_csv{
          * @tparam T type to deserialize to
          * @param field_index index of field
          * @param trim_spaces indicates whether the leading and trailing spaces must be trimmed or not
-         * @param trim_dbl_quotes indicates whether the leading and trailing quotes must be trimmed or not
+         * @param trim_escape_char indicates whether the leading and trailing quotes must be trimmed or not
          * @return T deserialized value of type T
          */
         template<typename T>
-        T get_field(int field_index,bool trim_spaces=false, bool trim_dbl_quotes=false)noexcept(false){
+        T get_field(int field_index,bool trim_spaces=false, bool trim_escape_char=false)noexcept(false){
             std::string_view field_view=(*this)[field_index];            
             if(trim_spaces){
                 trim(field_view);
             }
-            if(trim_dbl_quotes){
+            if(trim_escape_char){
                 trim(field_view,'\"');
             }
             return boost::lexical_cast<T>(field_view);
@@ -146,7 +147,7 @@ namespace turbo_csv{
                     fields.emplace_back(std::string_view(field_begin,field_end));
                     break;
                 }
-                if( *field_end!=seperator ){
+                if( !Dialect::is_fieldseperator(*field_end)){
                     *field_end++;
                 }
                 else{
@@ -162,12 +163,12 @@ namespace turbo_csv{
         }
         bool seperator_escaped(std::string::iterator current_iter_pos){
             // No quotes means parse it normally
-            if(quote_pos.empty()){return false;}
+            if(escape_char_pos.empty()){return false;}
 
             auto char_pos= std::distance(raw_record.begin(),current_iter_pos);
-            auto nearest_quote =std::lower_bound(quote_pos.begin(),quote_pos.end(),char_pos);
-            if(nearest_quote==quote_pos.begin()){return false;}
-            auto quote_count= std::distance(quote_pos.begin(),nearest_quote-1)+1;
+            auto nearest_quote =std::lower_bound(escape_char_pos.begin(),escape_char_pos.end(),char_pos);
+            if(nearest_quote==escape_char_pos.begin()){return false;}
+            auto quote_count= std::distance(escape_char_pos.begin(),nearest_quote-1)+1;
 
             //If there are even number of quotes then the current seperator is not escaped
             if(quote_count%2==0){return false;}

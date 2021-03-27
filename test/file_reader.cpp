@@ -5,9 +5,12 @@
 #include <sstream>
 
 
+
 auto examples_dir(){
     return std::string(EXAMPLES);
 }
+
+using namespace turbo_csv;
 
 BOOST_AUTO_TEST_SUITE(file_reader_ctor)
 

@@ -21,7 +21,7 @@ static void seq_fstream_read(benchmark::State& state){
 }
 
 static void parallel_buffered_file_reader(benchmark::State& state){
-    file_reader<1000000> my_reader(examples_dir()+"business_price_index.csv");
+    turbo_csv::file_reader<1000000> my_reader(examples_dir()+"business_price_index.csv");
     for(auto _ : state){
         std::string data;
         data.reserve(12000000);//Change if testing on different file to avoid allocation time

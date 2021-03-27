@@ -1,8 +1,11 @@
 #define BOOST_TEST_MODULE reader_test
 
 #include<turbo_csv.hpp>
+#include<csv_file_reader.hpp>
+#include<dialect.hpp>
 #include<boost/test/unit_test.hpp>
 
+using reader=turbo_csv::basic_reader<turbo_csv::file_reader<1024>,turbo_csv::dialect>;
 
 auto get_examples_dir() {
     return std::string(EXAMPLES);
@@ -12,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(methods)
 
 
 BOOST_AUTO_TEST_CASE(return_next_row) {
-    turbo_csv::reader csv_reader(get_examples_dir() + "cars.csv");
+    reader csv_reader(get_examples_dir() + "cars.csv");
 
     auto first_record = csv_reader.next();
 
@@ -31,7 +34,7 @@ BOOST_AUTO_TEST_CASE(return_next_row) {
 }
 
 BOOST_AUTO_TEST_CASE(range_based_for) {
-    turbo_csv::reader csv_reader(get_examples_dir() + "cars.csv");
+    reader csv_reader(get_examples_dir() + "cars.csv");
 
     std::vector<std::string> expected_rec0{ "2014","Ford","Fiesta Classic","1.6" };
     std::vector<std::string> expected_rec1{ "2020","Maruti Suzuki","Brezza","1.6" };
@@ -54,7 +57,7 @@ BOOST_AUTO_TEST_CASE(range_based_for) {
 }
 
 BOOST_AUTO_TEST_CASE(subscript_op_numeric_index) {
-    turbo_csv::reader csv_reader(get_examples_dir() + "cars.csv");
+    reader csv_reader(get_examples_dir() + "cars.csv");
     std::vector<std::string> expected_record_fields{ "2020","Maruti Suzuki","Brezza","1.6" };
 
     auto& rec1 = csv_reader[1];
@@ -68,7 +71,7 @@ BOOST_AUTO_TEST_CASE(subscript_op_numeric_index) {
 }
 
 BOOST_AUTO_TEST_CASE(active_record_count){
-    turbo_csv::reader csv_reader(get_examples_dir()+"cars.csv");
+    reader csv_reader(get_examples_dir()+"cars.csv");
     int expected_record_count=1;
 
     csv_reader.next(); // Force reading 1 record
@@ -77,7 +80,7 @@ BOOST_AUTO_TEST_CASE(active_record_count){
 }
 
 BOOST_AUTO_TEST_CASE(get_column){
-    turbo_csv::reader csv_reader(get_examples_dir()+"cars.csv");
+    reader csv_reader(get_examples_dir()+"cars.csv");
     
     std::vector<int> expected_col0_items={2014,2020};
 
@@ -89,7 +92,7 @@ BOOST_AUTO_TEST_CASE(get_column){
 }
 
 BOOST_AUTO_TEST_CASE(get_index_of_column){
-    turbo_csv::reader csv_reader(get_examples_dir()+"business_price_index.csv",true);
+    reader csv_reader(get_examples_dir()+"business_price_index.csv",true);
 
     BOOST_REQUIRE_EQUAL(7,csv_reader.get_indexof("Series_title_1"));
 
