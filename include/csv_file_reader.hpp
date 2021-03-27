@@ -28,6 +28,8 @@ class file_reader{
     std::mutex ibuf1_resx;
     std::mutex ibuf2_resx;
 
+    std::size_t current_read_count=0;
+
     std::atomic_bool ibuf1_consumed=false;
     std::atomic_bool ibuf2_consumed=false;
 
@@ -82,12 +84,22 @@ public:
     }
 
     /**
+     * @brief Returns the number of characters read
+     * 
+     * @return std::size_t Number of characters read 
+     */
+    auto get_current_readcount(){
+        return current_read_count;
+    }
+
+    /**
      * @brief Get the byte at the current location in the file
      *
      * @return std::optional<std::uint8_t> Current byte pointed inside the file/nullopt if reading completed
      */
     std::optional<std::uint8_t> get_byte(){
         if(*buf_ptr!='$' && *buf_ptr!='#'){
+            current_read_count++;
             return *buf_ptr++;
         }
 
@@ -99,9 +111,11 @@ public:
 
         if(current_active=='A' && *buf_ptr=='$'){
             switch_buffer('B');
+            current_read_count++;
             return *buf_ptr++;
         } else{
             switch_buffer('A');
+            current_read_count++;
             return *buf_ptr++;
         }
 

@@ -38,6 +38,18 @@ BOOST_AUTO_TEST_CASE(file_size){
     BOOST_REQUIRE_EQUAL(my_reader.get_filesize(),58);
 }
 
+BOOST_AUTO_TEST_CASE(current_read_count){
+    file_reader<> my_reader(examples_dir()+"cars.csv");
+
+    my_reader.get_byte();
+    my_reader.get_byte();
+    my_reader.get_byte();
+    my_reader.get_byte();
+    my_reader.get_byte();
+    
+    BOOST_REQUIRE_EQUAL(5,my_reader.get_current_readcount());
+}
+
 
 BOOST_AUTO_TEST_CASE(get_method_small_file){
    

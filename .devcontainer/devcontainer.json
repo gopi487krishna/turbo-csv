@@ -27,7 +27,7 @@
 		"twxs.cmake",
 		"ms-vscode.cmake-tools",
 		"cschlosser.doxdocgen",
-		"github.vscode-pull-request-github"
+		"github.vscode-pull-request-github",
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

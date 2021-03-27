@@ -16,6 +16,15 @@ namespace turbo_csv{
         bool is_cached=false;
 
         public:
+
+        /**
+         * @brief Construct a new record object
+         * 
+         */
+        record():record(""){
+
+        }
+
         /**
          * @brief Construct a new record object
          * 
@@ -44,17 +53,35 @@ namespace turbo_csv{
         }
 
         /**
+         * @brief Checks whether the record is empty or not
+         * 
+         * @return bool boolean value indicating whether the record is empty or not
+         */
+        auto is_empty(){
+            return raw_record.empty();
+        }
+        /**
          * @brief returns the number of fields in the record
          * 
          * @return std::size_t count of the fields present in the record
          */
         auto get_field_count(){
        
-            if(!is_cached){
+            if(!is_cached && !raw_record.empty()){
                 generate_metadata();
                 is_cached=true;
             }
             return fields.size();
+        }
+
+        /**
+         * @brief Returns the fields collection
+         * 
+         * @return const std::vector<std::string_view>& fields collection
+         */
+        const std::vector<std::string_view>& get_fields(){
+            if(!is_cached && !raw_record.empty()){generate_metadata();}
+            return fields;
         }
 
         /**
@@ -65,7 +92,7 @@ namespace turbo_csv{
          * @throw std::out_of_range if field_index is out of bounds
          */
         const std::string_view& operator[](int field_index)noexcept(false){
-            if(!is_cached){
+            if(!is_cached&& !raw_record.empty()){
                 generate_metadata();
                 is_cached=true;
             }

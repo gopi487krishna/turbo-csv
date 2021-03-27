@@ -7,6 +7,8 @@
 
 BOOST_AUTO_TEST_SUITE(record_methods)
 
+
+
 BOOST_AUTO_TEST_CASE(get_raw_size){
 
     turbo_csv::record<> rec("2014,Ford,Fiesta Classic,1.6");
@@ -19,6 +21,18 @@ BOOST_AUTO_TEST_CASE(get_field_count){
     
     BOOST_REQUIRE_EQUAL(4,rec.get_field_count());
 }
+
+BOOST_AUTO_TEST_CASE(get_fields){
+    turbo_csv::record<> rec("2014,Ford,Fiesta Classic,1.6");
+    std::vector<std::string> expected_fields{"2014","Ford","Fiesta Classic","1.6"};
+    auto actual_fields=rec.get_fields();
+    BOOST_REQUIRE_EQUAL_COLLECTIONS(
+        expected_fields.begin(),expected_fields.end(),
+        actual_fields.begin(),actual_fields.end()
+        );
+}
+
+
 BOOST_AUTO_TEST_CASE(get_field_from_index){
     turbo_csv::record<> rec("2014,Ford,Fiesta Classic,1.6");
 
@@ -45,6 +59,14 @@ BOOST_AUTO_TEST_CASE(get_converted_field_value_trimmed_double_quotes){
     BOOST_REQUIRE_EQUAL(2014,rec.get_field<int>(0,true,true));
 }
 
+BOOST_AUTO_TEST_CASE(record_is_empty){
+    turbo_csv::record<> rec("");
+
+    BOOST_ASSERT(rec.is_empty());
+    BOOST_REQUIRE_EQUAL(0,rec.get_raw_size());
+    BOOST_REQUIRE_EQUAL(0,rec.get_field_count());
+    BOOST_REQUIRE_EQUAL(0,rec.get_fields().size());
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()
