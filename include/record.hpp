@@ -24,7 +24,6 @@ namespace turbo_csv{
         record():record(""){
 
         }
-
         /**
          * @brief Construct a new record object
          * 
