@@ -80,7 +80,7 @@ namespace turbo_csv{
          * @return const std::vector<std::string_view>& fields collection
          */
         const std::vector<std::string_view>& get_fields(){
-            if(!is_cached && !raw_record.empty()){generate_metadata();}
+            if(!is_cached && !raw_record.empty()){generate_metadata();is_cached=true;}
             return fields;
         }
 
@@ -116,7 +116,7 @@ namespace turbo_csv{
                 trim(field_view);
             }
             if(trim_escape_char){
-                trim(field_view,'\"');
+                trim(field_view,Dialect::get_escapecharacter());
             }
             return boost::lexical_cast<T>(field_view);
         }

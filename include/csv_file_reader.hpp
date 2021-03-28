@@ -13,7 +13,7 @@
 
 
 namespace turbo_csv {
-    template<std::uint64_t buffer_size = 10>
+    template<std::uint64_t buffer_size = 1024>
     class file_reader {
 
         std::thread producer_thread;
@@ -45,7 +45,7 @@ namespace turbo_csv {
         file_reader(const std::string& path_to_file) noexcept(false) :file_path(path_to_file), buf_ptr(ibuf1) {
             //Ensure that exceptions are thrown  if the file fails to open
             file.exceptions(std::fstream::failbit | std::fstream::badbit);
-            file.open(path_to_file);
+            file.open(path_to_file,std::ios::binary|std::ios::in);
 
             //Initialize both the buffers with data for the first time and lock ibuf1 for use by get_byte
             initialize();
