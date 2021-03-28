@@ -162,3 +162,7 @@ There is also an experimental_reader in tubo_csv.hpp which supports 2way multith
 The users of this library can use their own custom dialect classe for supporting a number of variations in the csv format. 
 
 Similarily a custom file reader can also be written to support memory mapping the data
+
+
+>To know more about using the library please refer to the documentation tests ( all tests are documentation tests ) in tests folder
+
