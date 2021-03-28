@@ -56,6 +56,14 @@ BOOST_AUTO_TEST_CASE(range_based_for) {
     );
 }
 
+
+BOOST_AUTO_TEST_CASE(get_totalrecords){
+    reader csv_reader(get_examples_dir()+"cars.csv");
+    
+    BOOST_REQUIRE_EQUAL(2,csv_reader.get_totalrecords());
+}
+
+
 BOOST_AUTO_TEST_CASE(subscript_op_numeric_index) {
     reader csv_reader(get_examples_dir() + "cars.csv");
     std::vector<std::string> expected_record_fields{ "2020","Maruti Suzuki","Brezza","1.6" };

@@ -147,6 +147,18 @@ namespace turbo_csv {
         }
 
         /**
+         * @brief Gets the total number of records in a csv file
+         * 
+         * @return std::size_t total number of records in a csv file 
+         */
+        std::size_t get_totalrecords(){
+            // Bring all the rows into memory ( This is not optimal on memory at all)
+            while(read_next_record());
+            return records.size();
+        }
+
+
+        /**
          * @brief Get the active records in the reader object
          * 
          * @return std::size_t Count indicating the number of active records
