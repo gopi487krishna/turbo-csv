@@ -7,6 +7,10 @@
 #include<boost/range/iterator_range.hpp>
 #include<unordered_map>
 
+#include<csv_file_reader.hpp>
+#include<fstream_adaptor.hpp>
+#include<dialect.hpp>
+
 namespace turbo_csv {
     template<class FileReader,class Dialect>
     class basic_reader {
@@ -265,6 +269,9 @@ namespace turbo_csv {
         }
 
     };
+
+    using reader=basic_reader<adapted_fstream,dialect>;
+    using experimental_reader=basic_reader<file_reader<1000000>,dialect>;
 }
 
 

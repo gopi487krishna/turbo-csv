@@ -85,8 +85,8 @@ BOOST_AUTO_TEST_CASE(get_method_small_file_large_buffer){
 }
 
 BOOST_AUTO_TEST_CASE(get_method_large_file){
-    file_reader<1000000> my_reader(examples_dir()+"business_price_index.csv");
-    std::fstream file(examples_dir()+"business_price_index.csv");
+    file_reader<1000000> my_reader(examples_dir()+"business-price-index.csv");
+    std::fstream file(examples_dir()+"business-price-index.csv");
     std::stringstream original_data;
     std::string data;
 
