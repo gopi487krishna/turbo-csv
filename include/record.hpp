@@ -111,6 +111,7 @@ namespace turbo_csv{
          */
         template<typename T>
         T get_field(int field_index,bool trim_spaces=false, bool trim_escape_char=false)noexcept(false){
+            if(!is_cached&& !raw_record.empty()){generate_metadata();is_cached=true;}
             std::string_view field_view=(*this)[field_index];            
             if(trim_spaces){
                 trim(field_view);

@@ -40,9 +40,9 @@ namespace turbo_csv {
         /**
          * @brief Returns the next record from file
          * 
-         * @return const basic_record<Dialect>&  lazy record containing the data
+         * @return  basic_record<Dialect>&  lazy record containing the data
          */
-        const basic_record<Dialect>& next() {
+         basic_record<Dialect>& next() {
             if (read_next_record()) {
                 return records.back();
             }
@@ -192,7 +192,7 @@ namespace turbo_csv {
             std::vector<T>column_items;
 
             for(auto& rec: boost::make_iterator_range(records.begin()+offset,records.end())){
-                deserialized_fields.push_back(std::async([&rec,column_index](){return rec. template get_field<T>(column_index);}));
+                deserialized_fields.push_back(std::async([&rec,column_index](){return rec. template get_field<T>(column_index,true,true);}));
             }
 
             column_items.reserve(records.size());
