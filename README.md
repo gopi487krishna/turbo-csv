@@ -4,9 +4,12 @@
 
 turbo_csv is a header only simple,flexible and fast csv parser written for Boost.xml competency test
 
-## Architecture of turbo csv
+## turbo csv design
 
-The architecture of turbo_csv consists of 4 main components
+![image](https://user-images.githubusercontent.com/56198900/112767684-bccab600-9035-11eb-8e34-c7b7b4a0196e.png)
+
+
+The design of turbo_csv consists of 4 main components
 * Reader
 * Dialect
 * Record
