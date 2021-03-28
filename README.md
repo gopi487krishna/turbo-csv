@@ -4,6 +4,12 @@
 
 turbo_csv is a header only simple,flexible and fast csv parser written for Boost.xml competency test
 
+## Requirements
+
+C++20 (Currently C++20 is only required at few places in turbo_csv. This restriction will be removed in future )
+
+
+
 ## turbo csv design
 
 ![image](https://user-images.githubusercontent.com/56198900/112767684-bccab600-9035-11eb-8e34-c7b7b4a0196e.png)
