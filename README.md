@@ -166,6 +166,8 @@ rec.get_raw_size()
 
 There is also an experimental_reader in tubo_csv.hpp which supports 2way multithreaded input buffers for better performance. Its still buggy in nature.Hence it is advised only to use it for experimental purposes
 
+**csv_file_reader.hpp** is the implementation of mulithreaded input buffering system. The code is actually buggy and the quality is quite pathetic. So please do not use experimental_reader for any other purposes than testing
+
 ## custom_dialect and custom_file_reader
 
 The users of this library can use their own custom dialect classe for supporting a number of variations in the csv format. 
