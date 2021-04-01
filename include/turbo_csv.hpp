@@ -6,18 +6,20 @@
 #include<record.hpp>
 #include<boost/range/iterator_range.hpp>
 #include<unordered_map>
-
+#include<turbo_parser.hpp>
 #include<csv_file_reader.hpp>
 #include<fstream_adaptor.hpp>
 #include<dialect.hpp>
 
 namespace turbo_csv {
-    template<class FileReader,class Dialect>
+    template<template<class,class>class Parser,class FileReader,class Dialect>
     class basic_reader {
-        FileReader f_reader;
+        Parser<FileReader,Dialect> csv_parser;
         std::deque<basic_record<Dialect>> records;
+       
         bool treat_first_record_as_header;
         std::unordered_map<std::string,std::size_t> header_record;
+
         inline static basic_record<Dialect> empty_record{};
 
     public:
@@ -29,7 +31,7 @@ namespace turbo_csv {
          * @param treat_first_record_as_header exclude first record from processing? 
          */
         basic_reader(const std::string& fp, bool treat_first_record_as_header=false) :
-        f_reader(fp),
+        csv_parser(fp),
         treat_first_record_as_header(treat_first_record_as_header) {
             if(treat_first_record_as_header){
                 read_next_record();
@@ -229,49 +231,20 @@ namespace turbo_csv {
 
         bool read_next_record() {
 
-            std::vector<int>dbl_quote_pos;
-            std::string raw_rec;
+            auto next_record= csv_parser.next();
 
-            while (true) {
-
-                auto byte = f_reader.get_byte();
-
-                if (!byte.has_value() && raw_rec.empty()) { return false; }
-
-                if (!byte.has_value()) {
-                    records.push_back(basic_record<Dialect>(raw_rec, dbl_quote_pos));
-                    return true;
-                }
-
-                if (Dialect::is_escapecharacter(byte.value())) {
-                    raw_rec.push_back(byte.value());
-                    dbl_quote_pos.push_back(f_reader.get_current_readcount() - 1); // 0 based
-                }
-
-                else if (Dialect::is_recordseperator(byte.value())) {
-                    if (dbl_quote_pos.size() % 2 == 0) {
-                        records.push_back(basic_record<Dialect>(raw_rec, dbl_quote_pos));
-                        return true;
-                    }
-                    else {
-                        raw_rec.push_back(byte.value());
-                    }
-                }
-                else if(dialect::is_ignorecharacter(byte.value())){
-                    if(dbl_quote_pos.size()%2!=0){
-                        raw_rec.push_back(byte.value());
-                    }
-                }
-                else {
-                    raw_rec.push_back(byte.value());
-                }
+            if(!next_record.is_empty()){
+                records.push_back(next_record);
+                return true;
             }
+
+            return false;
         }
 
     };
 
-    using reader=basic_reader<adapted_fstream,dialect>;
-    using experimental_reader=basic_reader<file_reader<1000000>,dialect>;
+    using reader=basic_reader<parser,adapted_fstream,dialect>;
+    using experimental_reader=basic_reader<parser,file_reader<1000000>,dialect>;
 }
 
 

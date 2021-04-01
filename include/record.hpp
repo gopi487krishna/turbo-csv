@@ -168,6 +168,11 @@ namespace turbo_csv{
 
             auto char_pos= std::distance(raw_record.begin(),current_iter_pos);
             auto nearest_quote =std::lower_bound(escape_char_pos.begin(),escape_char_pos.end(),char_pos);
+            
+            // Means no quotes will be there before this seperator
+            // This was written like this because of lower bound. It finds the nearest position that is greater
+            // than the current but I wanted the nearest position that is smaller so I decided to subtract the
+            // pointer
             if(nearest_quote==escape_char_pos.begin()){return false;}
             auto quote_count= std::distance(escape_char_pos.begin(),nearest_quote-1)+1;
 
